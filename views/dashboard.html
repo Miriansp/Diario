@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Rutina Personal</title>
+    <style>
+        * * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ----------- BASE ----------- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    line-height: 1.4;
+}
+
+/* ----------- HEADER ----------- */
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.logo {
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.logout-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+.logout-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* ----------- CONTENEDOR ----------- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* ----------- CARDS RESPONSIVAS ----------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: clamp(15px, 3vw, 22px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.card-icon {
+    font-size: 24px;
+}
+
+.card-title {
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 600;
+    color: #333;
+}
+
+.card-content p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* ----------- BOTONES ----------- */
+.btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-top: 15px;
+    width: 100%;
+    font-size: 14px;
+}
+@media (min-width: 769px) {
+    .btn {
+        width: auto;
+    }
+}
+.btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #764ba2;
+}
+.btn-secondary:hover {
+    background: #6a3e95;
+}
+
+/* ----------- MODAL ----------- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+}
+.close:hover {
+    color: #333;
+}
+
+/* ----------- FORMULARIOS ----------- */
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* ----------- LISTA DE ITEMS ----------- */
+.list-item {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.list-item h4 {
+    color: #333;
+}
+.list-item p {
+    color: #666;
+    font-size: 14px;
+}
+
+.item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.edit-btn, .delete-btn {
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+.edit-btn {
+    background: #007bff;
+}
+.edit-btn:hover {
+    background: #0056b3;
+}
+.delete-btn {
+    background: #dc3545;
+}
+.delete-btn:hover {
+    background: #c82333;
+}
+
+/* ----------- MOBILE OPTIMIZATION ----------- */
+@media (max-width: 480px) {
+    .list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-actions {
+        align-self: flex-end;
+    }
+
+    .modal-content {
+        margin-top: 25%;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">✨ Rutina Personal</div>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🏃♂️</span>
+                    <h3 class="card-title">Rutinas</h3>
+                </div>
+                <div class="card-content">
+                    <p>Gestiona tus rutinas de ejercicio y actividades diarias.</p>
+                    <div id="routinesList"></div>
+                    <button class="btn" onclick="openModal('routineModal')">Nueva Rutina</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎯</span>
+                    <h3 class="card-title">Metas</h3>
+                </div>
+                <div class="card-content">
+                    <p>Define y sigue el progreso de tus objetivos.</p>
+                    <div id="metasList"></div>
+                    <button class="btn btn-secondary" onclick="openModal('metaModal')">Nueva Meta</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📅</span>
+                    <h3 class="card-title">Agenda</h3>
+                </div>
+                <div class="card-content">
+                    <p>Organiza tus citas y eventos importantes.</p>
+                    <div id="agendaList"></div>
+                    <button class="btn" onclick="openModal('agendaModal')">Nuevo Evento</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📝</span>
+                    <h3 class="card-title">Diario</h3>
+                </div>
+                <div class="card-content">
+                    <p>Registra tus pensamientos y reflexiones diarias.</p>
+                    <div id="diarioList"></div>
+                    <button class="btn btn-secondary" onclick="openModal('diarioModal')">Nueva Entrada</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="routineModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('routineModal')">&times;</span>
+            <h2 id="routineTitle">Nueva Rutina</h2>
+            <form id="routineForm">
+                <input type="hidden" id="routineId">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="routineName" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="routineDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Duración (minutos)</label>
+                    <input type="number" id="routineDuration" required>
+                </div>
+                <button type="submit" class="btn" id="routineSubmitBtn">Crear Rutina</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="metaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('metaModal')">&times;</span>
+            <h2 id="metaTitle">Nueva Meta</h2>
+            <form id="metaForm">
+                <input type="hidden" id="metaId">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="metaName" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="metaDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Límite</label>
+                    <input type="date" id="metaDeadline" required>
+                </div>
+                <button type="submit" class="btn" id="metaSubmitBtn">Crear Meta</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="agendaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('agendaModal')">&times;</span>
+            <h2 id="agendaTitle">Nuevo Evento</h2>
+            <form id="agendaForm">
+                <input type="hidden" id="agendaId">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="agendaName" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="agendaDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" id="agendaDateTime" required>
+                </div>
+                <button type="submit" class="btn" id="agendaSubmitBtn">Crear Evento</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="diarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('diarioModal')">&times;</span>
+            <h2 id="diarioTitle">Nueva Entrada de Diario</h2>
+            <form id="diarioForm">
+                <input type="hidden" id="diarioId">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="diarioName" required>
+                </div>
+                <div class="form-group">
+                    <label>Contenido</label>
+                    <textarea id="diarioContent" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Estado de Ánimo</label>
+                    <select id="diarioMood">
+                        <option value="feliz">😊 Feliz</option>
+                        <option value="neutral">😐 Neutral</option>
+                        <option value="triste">😢 Triste</option>
+                        <option value="enojado">😠 Enojado</option>
+                        <option value="emocionado">🤩 Emocionado</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" id="diarioSubmitBtn">Guardar Entrada</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { firebaseConfig } from './firebase-config.js';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!user.uid) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('userName').textContent = user.displayName || user.email || 'Usuario';
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        async function apiCall(url, options = {}) {
+            try {
+                const currentUser = auth.currentUser;
+                if (!currentUser) {
+                    logout();
+                    return null;
+                }
+
+                const token = await currentUser.getIdToken();
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers
+                };
+
+                const response = await fetch(url, {
+                    ...options,
+                    headers
+                });
+
+                if (response.status === 401) {
+                    logout();
+                    return null;
+                }
+
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Error parsing JSON:', text.substring(0, 100));
+                    return null;
+                }
+            } catch (err) {
+                console.error('API call error:', err);
+                return null;
+            }
+        }
+
+        function displayRoutines(routines) {
+            const container = document.getElementById('routinesList');
+            const items = Object.entries(routines || {}).map(([id, routine]) => ({ id, ...routine }));
+            container.innerHTML = items.slice(0, 3).map(routine => `
+                <div class="list-item">
+                    <div>
+                        <h4>${routine.name}</h4>
+                        <p>${routine.duration} min</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="edit-btn" data-action="edit-routine" data-id="${routine.id}" data-name="${routine.name}" data-desc="${routine.description || ''}" data-duration="${routine.duration}">✏️</button>
+                        <button type="button" class="delete-btn" data-action="delete-routine" data-id="${routine.id}">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<p>No hay rutinas</p>';
+            attachEventListeners();
+        }
+
+        function displayMetas(metas) {
+            const container = document.getElementById('metasList');
+            const items = Object.entries(metas || {}).map(([id, meta]) => ({ id, ...meta }));
+            container.innerHTML = items.slice(0, 3).map(meta => `
+                <div class="list-item">
+                    <div>
+                        <h4>${meta.title}</h4>
+                        <p>${new Date(meta.deadline).toLocaleDateString()}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="edit-btn" data-action="edit-meta" data-id="${meta.id}" data-title="${meta.title}" data-desc="${meta.description || ''}" data-deadline="${meta.deadline}">✏️</button>
+                        <button type="button" class="delete-btn" data-action="delete-meta" data-id="${meta.id}">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<p>No hay metas</p>';
+            attachEventListeners();
+        }
+
+        function displayAgenda(agenda) {
+            const container = document.getElementById('agendaList');
+            const items = Object.entries(agenda || {}).map(([id, event]) => ({ id, ...event }));
+            container.innerHTML = items.slice(0, 3).map(event => `
+                <div class="list-item">
+                    <div>
+                        <h4>${event.title}</h4>
+                        <p>${new Date(event.dateTime).toLocaleString()}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="edit-btn" data-action="edit-agenda" data-id="${event.id}" data-title="${event.title}" data-desc="${event.description || ''}" data-datetime="${event.dateTime}">✏️</button>
+                        <button type="button" class="delete-btn" data-action="delete-agenda" data-id="${event.id}">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<p>No hay eventos</p>';
+            attachEventListeners();
+        }
+
+        function displayDiario(diario) {
+            const container = document.getElementById('diarioList');
+            const items = Object.entries(diario || {}).map(([id, entry]) => ({ id, ...entry }));
+            container.innerHTML = items.slice(0, 3).map(entry => `
+                <div class="list-item">
+                    <div>
+                        <h4>${entry.title}</h4>
+                        <p>${new Date(entry.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="edit-btn" data-action="edit-diario" data-id="${entry.id}" data-title="${entry.title}" data-content="${entry.content || ''}" data-mood="${entry.mood}">✏️</button>
+                        <button type="button" class="delete-btn" data-action="delete-diario" data-id="${entry.id}">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<p>No hay entradas</p>';
+            attachEventListeners();
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', handleAction);
+            });
+        }
+
+        function handleAction(e) {
+            const btn = e.currentTarget;
+            const action = btn.dataset.action;
+            const id = btn.dataset.id;
+
+            if (action === 'edit-routine') {
+                document.getElementById('routineId').value = id;
+                document.getElementById('routineName').value = btn.dataset.name;
+                document.getElementById('routineDescription').value = btn.dataset.desc;
+                document.getElementById('routineDuration').value = btn.dataset.duration;
+                document.getElementById('routineTitle').textContent = 'Editar Rutina';
+                document.getElementById('routineSubmitBtn').textContent = 'Actualizar Rutina';
+                openModal('routineModal');
+            } else if (action === 'delete-routine') {
+                if (confirm('¿Estás seguro?')) deleteItem('/routines/', id);
+            } else if (action === 'edit-meta') {
+                document.getElementById('metaId').value = id;
+                document.getElementById('metaName').value = btn.dataset.title;
+                document.getElementById('metaDescription').value = btn.dataset.desc;
+                document.getElementById('metaDeadline').value = btn.dataset.deadline;
+                document.getElementById('metaTitle').textContent = 'Editar Meta';
+                document.getElementById('metaSubmitBtn').textContent = 'Actualizar Meta';
+                openModal('metaModal');
+            } else if (action === 'delete-meta') {
+                if (confirm('¿Estás seguro?')) deleteItem('/metas/', id);
+            } else if (action === 'edit-agenda') {
+                document.getElementById('agendaId').value = id;
+                document.getElementById('agendaName').value = btn.dataset.title;
+                document.getElementById('agendaDescription').value = btn.dataset.desc;
+                document.getElementById('agendaDateTime').value = btn.dataset.datetime;
+                document.getElementById('agendaTitle').textContent = 'Editar Evento';
+                document.getElementById('agendaSubmitBtn').textContent = 'Actualizar Evento';
+                openModal('agendaModal');
+            } else if (action === 'delete-agenda') {
+                if (confirm('¿Estás seguro?')) deleteItem('/agenda/', id);
+            } else if (action === 'edit-diario') {
+                document.getElementById('diarioId').value = id;
+                document.getElementById('diarioName').value = btn.dataset.title;
+                document.getElementById('diarioContent').value = btn.dataset.content;
+                document.getElementById('diarioMood').value = btn.dataset.mood;
+                document.getElementById('diarioTitle').textContent = 'Editar Entrada';
+                document.getElementById('diarioSubmitBtn').textContent = 'Actualizar Entrada';
+                openModal('diarioModal');
+            } else if (action === 'delete-diario') {
+                if (confirm('¿Estás seguro?')) deleteItem('/diario/', id);
+            }
+        }
+
+        document.getElementById('routineForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('routineId').value;
+            const data = {
+                name: document.getElementById('routineName').value,
+                description: document.getElementById('routineDescription').value,
+                duration: parseInt(document.getElementById('routineDuration').value)
+            };
+            
+            await apiCall(id ? `/routines/${id}` : '/routines/', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            closeModal('routineModal');
+            document.getElementById('routineId').value = '';
+            document.getElementById('routineTitle').textContent = 'Nueva Rutina';
+            document.getElementById('routineSubmitBtn').textContent = 'Crear Rutina';
+            e.target.reset();
+        });
+
+        document.getElementById('metaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('metaId').value;
+            const data = {
+                title: document.getElementById('metaName').value,
+                description: document.getElementById('metaDescription').value,
+                deadline: document.getElementById('metaDeadline').value
+            };
+            
+            await apiCall(id ? `/metas/${id}` : '/metas/', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            closeModal('metaModal');
+            document.getElementById('metaId').value = '';
+            document.getElementById('metaTitle').textContent = 'Nueva Meta';
+            document.getElementById('metaSubmitBtn').textContent = 'Crear Meta';
+            e.target.reset();
+        });
+
+        document.getElementById('agendaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('agendaId').value;
+            const data = {
+                title: document.getElementById('agendaName').value,
+                description: document.getElementById('agendaDescription').value,
+                dateTime: document.getElementById('agendaDateTime').value
+            };
+            
+            await apiCall(id ? `/agenda/${id}` : '/agenda/', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            closeModal('agendaModal');
+            document.getElementById('agendaId').value = '';
+            document.getElementById('agendaTitle').textContent = 'Nuevo Evento';
+            document.getElementById('agendaSubmitBtn').textContent = 'Crear Evento';
+            e.target.reset();
+        });
+
+        document.getElementById('diarioForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('diarioId').value;
+            const data = {
+                title: document.getElementById('diarioName').value,
+                content: document.getElementById('diarioContent').value,
+                mood: document.getElementById('diarioMood').value
+            };
+            
+            await apiCall(id ? `/diario/${id}` : '/diario/', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            closeModal('diarioModal');
+            document.getElementById('diarioId').value = '';
+            document.getElementById('diarioTitle').textContent = 'Nueva Entrada de Diario';
+            document.getElementById('diarioSubmitBtn').textContent = 'Guardar Entrada';
+            e.target.reset();
+        });
+
+        async function deleteItem(endpoint, id) {
+            await apiCall(`${endpoint}${id}`, { method: 'DELETE' });
+        }
+
+        onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                const uid = currentUser.uid;
+
+                onValue(ref(db, `routines/${uid}`), (snapshot) => {
+                    displayRoutines(snapshot.val() || {});
+                });
+
+                onValue(ref(db, `metas/${uid}`), (snapshot) => {
+                    displayMetas(snapshot.val() || {});
+                });
+
+                onValue(ref(db, `agenda/${uid}`), (snapshot) => {
+                    displayAgenda(snapshot.val() || {});
+                });
+
+                onValue(ref(db, `diario/${uid}`), (snapshot) => {
+                    displayDiario(snapshot.val() || {});
+                });
+            }
+        });
+    </script>
+</body>
+</html>

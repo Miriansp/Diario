@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Rutina Personal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: bold; }
+        .logout-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .card-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .card-icon { font-size: 24px; margin-right: 10px; }
+        .card-title { font-size: 18px; font-weight: 600; color: #333; }
+        .btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+        .btn-secondary { background: #764ba2; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background: white; margin: 5% auto; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; }
+        .close { float: right; font-size: 28px; cursor: pointer; color: #999; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; }
+        .list-item { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">✨ Rutina Personal</div>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🏃♂️</span>
+                    <h3 class="card-title">Rutinas</h3>
+                </div>
+                <div class="card-content">
+                    <p>Gestiona tus rutinas de ejercicio y actividades diarias.</p>
+                    <div id="routinesList"><p>No hay rutinas</p></div>
+                    <button class="btn" onclick="openModal('routineModal')">Nueva Rutina</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎯</span>
+                    <h3 class="card-title">Metas</h3>
+                </div>
+                <div class="card-content">
+                    <p>Define y sigue el progreso de tus objetivos.</p>
+                    <div id="metasList"><p>No hay metas</p></div>
+                    <button class="btn btn-secondary" onclick="openModal('metaModal')">Nueva Meta</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📅</span>
+                    <h3 class="card-title">Agenda</h3>
+                </div>
+                <div class="card-content">
+                    <p>Organiza tus citas y eventos importantes.</p>
+                    <div id="agendaList"><p>No hay eventos</p></div>
+                    <button class="btn" onclick="openModal('agendaModal')">Nuevo Evento</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📝</span>
+                    <h3 class="card-title">Diario</h3>
+                </div>
+                <div class="card-content">
+                    <p>Registra tus pensamientos y reflexiones diarias.</p>
+                    <div id="diarioList"><p>No hay entradas</p></div>
+                    <button class="btn btn-secondary" onclick="openModal('diarioModal')">Nueva Entrada</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rutina -->
+    <div id="routineModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('routineModal')">&times;</span>
+            <h2>Nueva Rutina</h2>
+            <form id="routineForm">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="routineName" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="routineDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Duración (minutos)</label>
+                    <input type="number" id="routineDuration" required>
+                </div>
+                <button type="submit" class="btn">Crear Rutina</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Meta -->
+    <div id="metaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('metaModal')">&times;</span>
+            <h2>Nueva Meta</h2>
+            <form id="metaForm">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="metaTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="metaDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Límite</label>
+                    <input type="date" id="metaDeadline" required>
+                </div>
+                <button type="submit" class="btn">Crear Meta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Agenda -->
+    <div id="agendaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('agendaModal')">&times;</span>
+            <h2>Nuevo Evento</h2>
+            <form id="agendaForm">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="agendaTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="agendaDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" id="agendaDateTime" required>
+                </div>
+                <button type="submit" class="btn">Crear Evento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Diario -->
+    <div id="diarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('diarioModal')">&times;</span>
+            <h2>Nueva Entrada de Diario</h2>
+            <form id="diarioForm">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="diarioTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Contenido</label>
+                    <textarea id="diarioContent" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn">Guardar Entrada</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let routines = [];
+        let metas = [];
+        let agenda = [];
+        let diario = [];
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function logout() {
+            window.location.href = '/login.html';
+        }
+
+        function displayRoutines() {
+            const container = document.getElementById('routinesList');
+            container.innerHTML = routines.length ? routines.map((routine, index) => `
+                <div class="list-item">
+                    <div>
+                        <h4>${routine.name}</h4>
+                        <p>${routine.duration} min - ${routine.description}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteRoutine(${index})">×</button>
+                </div>
+            `).join('') : '<p>No hay rutinas</p>';
+        }
+
+        function displayMetas() {
+            const container = document.getElementById('metasList');
+            container.innerHTML = metas.length ? metas.map((meta, index) => `
+                <div class="list-item">
+                    <div>
+                        <h4>${meta.title}</h4>
+                        <p>${meta.deadline} - ${meta.description}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMeta(${index})">×</button>
+                </div>
+            `).join('') : '<p>No hay metas</p>';
+        }
+
+        function displayAgenda() {
+            const container = document.getElementById('agendaList');
+            container.innerHTML = agenda.length ? agenda.map((event, index) => `
+                <div class="list-item">
+                    <div>
+                        <h4>${event.title}</h4>
+                        <p>${event.dateTime} - ${event.description}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteAgenda(${index})">×</button>
+                </div>
+            `).join('') : '<p>No hay eventos</p>';
+        }
+
+        function displayDiario() {
+            const container = document.getElementById('diarioList');
+            container.innerHTML = diario.length ? diario.map((entry, index) => `
+                <div class="list-item">
+                    <div>
+                        <h4>${entry.title}</h4>
+                        <p>${entry.content.substring(0, 50)}...</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteDiario(${index})">×</button>
+                </div>
+            `).join('') : '<p>No hay entradas</p>';
+        }
+
+        document.getElementById('routineForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            routines.push({
+                name: document.getElementById('routineName').value,
+                description: document.getElementById('routineDescription').value,
+                duration: document.getElementById('routineDuration').value
+            });
+            displayRoutines();
+            closeModal('routineModal');
+            e.target.reset();
+        });
+
+        document.getElementById('metaForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            metas.push({
+                title: document.getElementById('metaTitle').value,
+                description: document.getElementById('metaDescription').value,
+                deadline: document.getElementById('metaDeadline').value
+            });
+            displayMetas();
+            closeModal('metaModal');
+            e.target.reset();
+        });
+
+        document.getElementById('agendaForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            agenda.push({
+                title: document.getElementById('agendaTitle').value,
+                description: document.getElementById('agendaDescription').value,
+                dateTime: document.getElementById('agendaDateTime').value
+            });
+            displayAgenda();
+            closeModal('agendaModal');
+            e.target.reset();
+        });
+
+        document.getElementById('diarioForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            diario.push({
+                title: document.getElementById('diarioTitle').value,
+                content: document.getElementById('diarioContent').value
+            });
+            displayDiario();
+            closeModal('diarioModal');
+            e.target.reset();
+        });
+
+        function deleteRoutine(index) {
+            routines.splice(index, 1);
+            displayRoutines();
+        }
+
+        function deleteMeta(index) {
+            metas.splice(index, 1);
+            displayMetas();
+        }
+
+        function deleteAgenda(index) {
+            agenda.splice(index, 1);
+            displayAgenda();
+        }
+
+        function deleteDiario(index) {
+            diario.splice(index, 1);
+            displayDiario();
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

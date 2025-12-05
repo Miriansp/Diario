@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.local
+serviceAccountKey.json
+certs/
+npm-debug.log
+*.log
+.DS_Store
+.vscode/
+dist/
+build/
